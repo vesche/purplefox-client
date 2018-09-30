@@ -13,6 +13,9 @@
 
 int main()
 {
+    // const int FPS = 24;
+    // int frame_time = 0;
+
     // declare pointers
     SDL_Window *window;
     SDL_Renderer *renderer;
@@ -47,8 +50,11 @@ int main()
         SDL_Quit();
         return 1;
     }
+    
+    // https://opengameart.org/content/tiny-16-basic
+    // surface = LoadTexture("sheet.png", renderer);
 
-    surface = IMG_Load("wizard.png");
+    surface = IMG_Load("sheet.png");
 
     if (surface == NULL) {
         print_error_msg(ERROR_TYPE_IMAGE, "Couldn't create SDL surface");
@@ -69,25 +75,19 @@ int main()
         return 1;
     }
 
+    int frame_width, frame_height;
+    int texture_width, texture_height;
+    SDL_QueryTexture(texture, NULL, NULL, &texture_width, &texture_height);
+    frame_width = texture_width / 32;
+    frame_height = texture_height / 32;
+
+    SDL_Rect player;
+    player.x = player.y = 0;
+    player.w = frame_width;
+    player.h = frame_height;
+
     connect_to_server();
     
-    /* testing networking.h
-    
-    SDL_Delay(1000);
-
-    char *message_a = payload_login("test");
-    client_send(message_a);
-
-    // NOTE: there needs to be a SDL_Delay before sending new messaages to the server
-    SDL_Delay(10);
-
-    char *message_b = payload_move(13, 37);
-    client_send(message_b);
-
-    char *response = client_recv();
-    handle_incoming(response);
-    */
-
     // THREADING
     // https://github.com/raduprv/Eternal-Lands/blob/d277e1f8ff3cc257ac394e7393aa0d1442295b2a/main.c#L179
     // ------
@@ -119,15 +119,20 @@ int main()
             case SDL_KEYDOWN:
                 switch (event.key.keysym.sym)
                 {
+                    // key map
+                    // https://www.libsdl.org/release/SDL-1.2.15/docs/html/sdlkey.html
+                    
                     case SDLK_q:
                         quit = true;
                         break;
                     case SDLK_LEFT:
                         x -= 1;
+                        // player.x -= 1;
                         moved = true;
                         break;
                     case SDLK_RIGHT:
                         x += 1;
+                        // player.x += 1;
                         moved = true;
                         break;
                     case SDLK_UP:
@@ -146,8 +151,10 @@ int main()
             client_send(message);
         }
 
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
-        SDL_RenderCopy(renderer, texture, NULL, NULL);
+        // SDL_RenderCopy(renderer, texture, NULL, NULL);
+        SDL_RenderCopy(renderer, texture, &player, NULL);
         SDL_RenderPresent(renderer);
     }
 
@@ -163,6 +170,7 @@ int main()
     SDL_WaitThread(network_thread, &thread_return_value);
     printf("Thread returned: %d\n", thread_return_value);
 
+    IMG_Quit();
     SDL_Quit();
 
     return 0;
