@@ -78,26 +78,27 @@ int main()
     SDL_RenderCopy(renderer, texture, NULL, NULL);
     SDL_RenderPresent(renderer);
 
-    // https://github.com/raduprv/Eternal-Lands/blob/d277e1f8ff3cc257ac394e7393aa0d1442295b2a/main.c#L179
-    // SDL_Thread *network_thread;
-    // network_thread = SDL_CreateThread()
-
     connect_to_server();
     
+    /* testing networking.h
     SDL_Delay(1000);
 
     char *message_a = payload_login("test");
     client_send(message_a);
 
-    // TODO: clean up for multiple messages
+    // NOTE: there needs to be a SDL_Delay before sending new messaages to the server
+    SDL_Delay(10);
 
-    //char *message_b = payload_move(13, 37);
-	//client_send(message_b);
+    char *message_b = payload_move(13, 37);
+    client_send(message_b);
 
-    // char *response = client_recv();
-    // handle_incoming(response);
+    char *response = client_recv();
+    handle_incoming(response);
 
-    /* THREADING
+    */
+
+    // THREADING
+    // https://github.com/raduprv/Eternal-Lands/blob/d277e1f8ff3cc257ac394e7393aa0d1442295b2a/main.c#L179
     // ------
     // static void *network_thread_data = NULL;
     SDL_Thread *network_thread;
@@ -107,29 +108,26 @@ int main()
         return 1;
     }
     // ------
-    */
 
-    // SDL_Delay(2000);
-
-    // char *message_c = payload_move(22, 33);
-	// client_send(message_c);
-
-    // ------
+    SDL_Delay(1000);
+    char *message_b = payload_move(13, 37);
+    client_send(message_b);
 
     // sleep for 10 seconds
     SDL_Delay(10000);
     disconnect_from_server();
 
+    // tear down graphics
     SDL_DestroyTexture(texture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
-    SDL_Quit();
-
-    /* THREADING
+    
+    // THREADING
     int thread_return_value;
     SDL_WaitThread(network_thread, &thread_return_value);
     printf("Thread returned: %d\n", thread_return_value);
-    */
+
+    SDL_Quit();
 
     return 0;
 }

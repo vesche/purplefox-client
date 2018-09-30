@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <stdio.h> // tmp
 #include <string.h>
 
 #include "networking.h"
@@ -8,6 +9,7 @@
 const char *server_addr = "localhost";
 const int server_port = 1234;
 TCPsocket sock;
+SDLNet_SocketSet set = 0;
 
 // tmp?
 int disconnected = 0;
@@ -15,22 +17,39 @@ int disconnected = 0;
 void connect_to_server()
 {
 	IPaddress ip;
+	set = SDLNet_AllocSocketSet(1);
+	if (!set) {
+		// TODO: cleanup on these error out (SDL_Quit, etc)
+		//       also standardize error return codes?
+		print_error_msg(ERROR_TYPE_NET, "Couldn't allocate socket");
+		exit(1);
+	}
+
 	if (SDLNet_ResolveHost(&ip, server_addr, server_port) == -1) {
 		print_error_msg(ERROR_TYPE_NET, "Couldn't resolve host");
-		exit(1);
+		exit(2);
 	}
 
 	sock = SDLNet_TCP_Open(&ip);
 	if (sock == NULL) {
 		print_error_msg(ERROR_TYPE_NET, "Couldn't open socket");
-		exit(2);
+		exit(3);
 	}
+
+	if (SDLNet_TCP_AddSocket(set, sock) == -1) {
+		print_error_msg(ERROR_TYPE_NET, "Couldn't add socket");
+		exit(4);
+	}
+
+	// this has been helpful:
+	// https://github.com/raduprv/Eternal-Lands/blob/master/multiplayer.c#L475
 }
 
 void disconnect_from_server()
 {
 	SDLNet_TCP_Close(sock);
 	disconnected = 1;
+	SDLNet_Quit();
 }
 
 int client_send(char *message)
@@ -63,19 +82,33 @@ char *client_recv()
 
 int client_loop()
 {
+	int i;
+	i = 0;
+
 	for (;;) {
-		//if (disconnected) {
-		//	break;
-		//}
+		i++;
+		printf("Server has listened for %d messages.\n", i);
+
+
+		if (disconnected) {
+			printf("DEBUG: disconnected is 1");
+			break;
+		} else if (SDLNet_CheckSockets(set, 100) <= 0 || !SDLNet_SocketReady(sock)) {
+			// if no data loop and check again, with 100ms delay time
+			continue;
+		}
 
 		// tmp?
 		// https://github.com/raduprv/Eternal-Lands/blob/master/multiplayer.c#L2332
-		SDL_Delay(100); // ten times a second
+		
+		// SDL_Delay(100); // ten times a second
+		// probably shouldn't need this now ^^
 
 		char *response = client_recv();
 		if (response)
 			handle_incoming(response);
 	}
+	
 	return 1;
 }
 
