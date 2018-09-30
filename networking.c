@@ -82,27 +82,18 @@ char *client_recv()
 
 int client_loop()
 {
-	int i;
-	i = 0;
+	// helpful:
+	// https://github.com/raduprv/Eternal-Lands/blob/master/multiplayer.c#L2332
 
 	for (;;) {
-		i++;
-		printf("Server has listened for %d messages.\n", i);
-
 
 		if (disconnected) {
-			printf("DEBUG: disconnected is 1");
+			printf("DEBUG: disconnected is 1\n");
 			break;
 		} else if (SDLNet_CheckSockets(set, 100) <= 0 || !SDLNet_SocketReady(sock)) {
 			// if no data loop and check again, with 100ms delay time
 			continue;
 		}
-
-		// tmp?
-		// https://github.com/raduprv/Eternal-Lands/blob/master/multiplayer.c#L2332
-		
-		// SDL_Delay(100); // ten times a second
-		// probably shouldn't need this now ^^
 
 		char *response = client_recv();
 		if (response)
@@ -132,10 +123,10 @@ void handle_incoming(char *message)
 
 	switch(cmd) {
 		case CMD_LOCATIONS:
-			printf("LOCATIONS COMMAND HERE\n");
+			printf("Handle player locations here\n");
 			break;
 		case CMD_TEST:
-			printf("TEST COMMAND HERE\n");
+			printf("Handle test here\n");
 			break;
 	}
 

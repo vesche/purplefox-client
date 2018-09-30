@@ -2,6 +2,7 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_net.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #include "error.h"
 #include "networking.h"
@@ -9,12 +10,6 @@
 
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
-
-// init SDL2
-// handle user input
-// send & recv shit
-// update
-// render display
 
 int main()
 {
@@ -74,13 +69,10 @@ int main()
         return 1;
     }
 
-    SDL_RenderClear(renderer);
-    SDL_RenderCopy(renderer, texture, NULL, NULL);
-    SDL_RenderPresent(renderer);
-
     connect_to_server();
     
     /* testing networking.h
+    
     SDL_Delay(1000);
 
     char *message_a = payload_login("test");
@@ -94,7 +86,6 @@ int main()
 
     char *response = client_recv();
     handle_incoming(response);
-
     */
 
     // THREADING
@@ -109,12 +100,57 @@ int main()
     }
     // ------
 
-    SDL_Delay(1000);
-    char *message_b = payload_move(13, 37);
-    client_send(message_b);
+    int x;
+    int y;
+    x = 0;
+    y = 0;
 
-    // sleep for 10 seconds
-    SDL_Delay(10000);
+    bool quit = false;
+
+    SDL_Event event;
+
+    while (!quit)
+    {
+        SDL_WaitEvent(&event);
+        bool moved = false;
+
+        switch (event.type)
+        {
+            case SDL_KEYDOWN:
+                switch (event.key.keysym.sym)
+                {
+                    case SDLK_q:
+                        quit = true;
+                        break;
+                    case SDLK_LEFT:
+                        x -= 1;
+                        moved = true;
+                        break;
+                    case SDLK_RIGHT:
+                        x += 1;
+                        moved = true;
+                        break;
+                    case SDLK_UP:
+                        y += 1;
+                        moved = true;
+                        break;
+                    case SDLK_DOWN:
+                        y -= 1;
+                        moved = true;
+                        break;
+                }
+        }
+
+        if (moved) {
+            char *message = payload_move(x, y);
+            client_send(message);
+        }
+
+        SDL_RenderClear(renderer);
+        SDL_RenderCopy(renderer, texture, NULL, NULL);
+        SDL_RenderPresent(renderer);
+    }
+
     disconnect_from_server();
 
     // tear down graphics
