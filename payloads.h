@@ -7,6 +7,6 @@
 char *payload_login(char *arg_password);
 
 // create payload for player movement
-char *payload_move(int arg_x, int arg_y);
+char *payload_move(char *arg_direction);
 
 #endif

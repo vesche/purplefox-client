@@ -6,12 +6,13 @@
 #include "error.h"
 #include "cJSON.h"
 
+#include "main.h" // tmp
+
 const char *server_addr = "localhost";
 const int server_port = 1234;
 TCPsocket sock;
 SDLNet_SocketSet set = 0;
 
-// tmp?
 int disconnected = 0;
 
 void connect_to_server()
@@ -106,6 +107,7 @@ int client_loop()
 void handle_incoming(char *message)
 {
 	const cJSON *command = NULL;
+	const cJSON *arguments = NULL;
 
 	cJSON *json = cJSON_Parse(message);
 	if (json == NULL) {
@@ -118,16 +120,22 @@ void handle_incoming(char *message)
 		print_error_msg(ERROR_TYPE_JSON, "Invalid command type on incoming JSON");
 		goto end;
 	}
-
 	unsigned int cmd = command->valueint;
 
-	switch(cmd) {
-		case CMD_LOCATIONS:
-			printf("Handle player locations here\n");
-			break;
-		case CMD_TEST:
-			printf("Handle test here\n");
-			break;
+	arguments = cJSON_GetObjectItemCaseSensitive(json, "arguments");
+
+	if (cmd == 1) {
+		printf("Handle player locations here\n");
+	} else if (cmd == 2) { // TEST COMMAND
+		printf("Handle test here\n");
+	} else if (cmd == 3) { // MOVEMENT COMMAND
+		const cJSON *x = NULL;
+		const cJSON *y = NULL;
+		x = cJSON_GetObjectItemCaseSensitive(arguments, "x");
+		y = cJSON_GetObjectItemCaseSensitive(arguments, "y");
+		unsigned int x_val = x->valueint;
+		unsigned int y_val = y->valueint;
+		update_location(x_val, y_val);
 	}
 
 end:

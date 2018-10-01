@@ -27,8 +27,4 @@ char *client_recv();
 // handle incoming server messages
 void handle_incoming();
 
-// command mappings for incoming messages
-#define CMD_LOCATIONS   1
-#define CMD_TEST        2
-
 #endif

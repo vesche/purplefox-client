@@ -11,11 +11,18 @@
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
 
+SDL_Rect player_position;
+
+// tmp until I have something better
+#include "main.h"
+void update_location(int x, int y)
+{
+    player_position.x = x;
+    player_position.y = y;
+}
+
 int main()
 {
-    // const int FPS = 24;
-    int frame_time = 0;
-
     // declare pointers
     SDL_Window *window;
     SDL_Renderer *renderer;
@@ -24,7 +31,7 @@ int main()
 
     // sprite stuff
     SDL_Rect player;
-    SDL_Rect player_position;
+    // SDL_Rect player_position;
 
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         print_error_msg(ERROR_TYPE_SDL2, "Couldn't initialize SDL");
@@ -105,10 +112,9 @@ int main()
     }
     // ------
 
-    int player_speed;
-    player_speed = 4;
-
     bool quit = false;
+    int frame_time = 0;
+    char *direction = NULL;
 
     SDL_Event event;
 
@@ -130,29 +136,29 @@ int main()
                         break;
                     case SDLK_LEFT:
                         player.y = 288;
-                        player_position.x -= player_speed;
                         moved = true;
+                        direction = "left";
                         break;
                     case SDLK_RIGHT:
                         player.y = 320;
-                        player_position.x += player_speed;
                         moved = true;
+                        direction = "right";
                         break;
                     case SDLK_UP:
                         player.y = 352;
-                        player_position.y -= player_speed;
                         moved = true;
+                        direction = "up";
                         break;
                     case SDLK_DOWN:
                         player.y = 256;
-                        player_position.y += player_speed;
                         moved = true;
+                        direction = "down";
                         break;
                 }
         }
 
         if (moved) {
-            char *message = payload_move(player_position.x, player_position.y);
+            char *message = payload_move(direction);
             client_send(message);
 
             frame_time++;
@@ -164,8 +170,8 @@ int main()
             }
         }
 
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         // SDL_RenderCopy(renderer, texture, NULL, NULL);
         SDL_RenderCopy(renderer, texture, &player, &player_position);
         SDL_RenderPresent(renderer);

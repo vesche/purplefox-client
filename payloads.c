@@ -51,7 +51,7 @@ char *payload_login(char *arg_password)
     return string;
 }
 
-char *payload_move(int arg_x, int arg_y)
+char *payload_move(char *arg_direction)
 {
     char *string = NULL;
 
@@ -59,14 +59,11 @@ char *payload_move(int arg_x, int arg_y)
     cJSON *payload = payload_init(CMDSTR);
 
     cJSON *arguments = NULL;
-    cJSON *x = NULL;
-    cJSON *y = NULL;
+    cJSON *direction = NULL;
 
     arguments = cJSON_CreateObject();
-    x = cJSON_CreateNumber(arg_x);
-    y = cJSON_CreateNumber(arg_y);
-    cJSON_AddItemToObject(arguments, "x", x);
-    cJSON_AddItemToObject(arguments, "y", y);
+    direction = cJSON_CreateString(arg_direction);
+    cJSON_AddItemToObject(arguments, "direction", direction);
     cJSON_AddItemToObject(payload, "arguments", arguments);
 
     string = cJSON_Print(payload);
