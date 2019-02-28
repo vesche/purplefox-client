@@ -112,6 +112,8 @@ void handle_incoming(char *message)
 	cJSON *json = cJSON_Parse(message);
 	if (json == NULL) {
 		print_error_msg(ERROR_TYPE_JSON, "Couldn't parse incoming JSON");
+        // TODO: Move server disconnect into client loop
+        disconnect_from_server();
 		goto end;
 	}
 
