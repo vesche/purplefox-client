@@ -1,9 +1,10 @@
-
 /*
     Code dump
 */
 
-/* testing networking.h
+/*
+    testing networking.h
+*/
 
 SDL_Delay(1000);
 
@@ -15,20 +16,23 @@ SDL_Delay(10);
 
 char *message_b = payload_move(13, 37);
 client_send(message_b);
-
 char *response = client_recv();
 handle_incoming(response);
+
+/*
+    testing sprites
 */
 
-/* testing sprites
 SDL_Surface *sprite;
 sprite = SDL_DisplayFormat(surface);
 SDL_Rect player;
 player.x = 0;
 player.y = 0;
-*/
 
 /*
+    testing move payload
+*/
+
 char *payload_move(int arg_x, int arg_y)
 {
     char *string = NULL;
@@ -51,7 +55,6 @@ char *payload_move(int arg_x, int arg_y)
     cJSON_Delete(payload);
     return string;
 }
-*/
 
 int main()
 {
