@@ -40,9 +40,11 @@ class Test(protocol.Protocol):
                 self.x -= SPEED
             elif d == 'right':
                 self.x += SPEED
-            self.transport.write(
-                json.dumps(foo(self.x, self.y)).encode()
-            )
+            
+            ret_data = json.dumps(foo(self.x, self.y)).encode()
+            enc_data = rc4.encrypt(KEY, str(ret_data)) # str?
+            # print(ret_data, enc_data); quit()
+            self.transport.write(enc_data)
 
 class TestFactory(protocol.Factory):
     def buildProtocol(self, addr):
