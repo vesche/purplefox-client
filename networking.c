@@ -6,6 +6,9 @@
 #include "error.h"
 #include "cJSON.h"
 
+#include "rc4.h"
+char *key = "yellowsubmarine"; // tmp until session key
+
 #include "main.h" // tmp
 
 const char *server_addr = "localhost";
@@ -55,9 +58,12 @@ void disconnect_from_server()
 
 int client_send(char *message)
 {
-	char *data = message;
+	// char *data = message;
+	unsigned char *ciphertext = malloc(sizeof(int) * strlen(message));
+	RC4(key, message, ciphertext);
+
 	int len = strlen(message);
-	return SDLNet_TCP_Send(sock, data, len);
+	return SDLNet_TCP_Send(sock, ciphertext, len);
 }
 
 char *client_recv()

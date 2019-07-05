@@ -1,8 +1,10 @@
 from twisted.internet import protocol, reactor, endpoints
 
 import json
+import rc4
 
 SPEED = 4
+KEY = "yellowsubmarine" # tmp, redis session key based on username?
 
 def foo(x, y):
     payload = {
@@ -22,6 +24,8 @@ class Test(protocol.Protocol):
         self.y = 0
 
     def dataReceived(self, data):
+        # NOTE: this might be slow, convert to hex before sending?
+        data = rc4.decrypt(KEY, data.hex()) 
         test = json.loads(data)
         print("RECV: {}".format(test))
 
@@ -36,7 +40,9 @@ class Test(protocol.Protocol):
                 self.x -= SPEED
             elif d == 'right':
                 self.x += SPEED
-            self.transport.write( json.dumps(foo(self.x, self.y)).encode() )
+            self.transport.write(
+                json.dumps(foo(self.x, self.y)).encode()
+            )
 
 class TestFactory(protocol.Factory):
     def buildProtocol(self, addr):
