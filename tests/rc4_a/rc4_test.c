@@ -1,11 +1,8 @@
-
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 
-// #include "rc4.c"
-
-#include "rc4_bak.c"
+#include "rc4.c"
 
 char *strstrip(char *s)
 {
@@ -15,15 +12,15 @@ char *strstrip(char *s)
         size = strlen(s);
 
         if (!size)
-                return s;
+            return s;
 
         end = s + size - 1;
         while (end >= s && isspace(*end))
-                end--;
+            end--;
         *(end + 1) = '\0';
 
         while (*s && isspace(*s))
-                s++;
+            s++;
 
         return s;
 }
