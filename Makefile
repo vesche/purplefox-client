@@ -2,7 +2,7 @@ CC := gcc
 CFLAGS := `sdl2-config --cflags --libs` -lSDL2_image -lSDL2_net -Wall
 # -ggdb3 -O0 --std=c99 -lm
 
-HDRS := cJSON.h error.h networking.h payloads.h
+HDRS := cJSON.h error.h networking.h payloads.h rc4.h
 
 SRCS := main.c cJSON.c error.c networking.c payloads.c rc4.c
 OBJS := $(SRCS:.c=.o)
