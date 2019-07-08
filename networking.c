@@ -76,15 +76,21 @@ char *client_recv()
 		solution from: https://stackoverflow.com/a/12380788
 	*/
 	char *message = malloc(sizeof(char) * RECV_MAX_LEN);
-	
+
 	result = SDLNet_TCP_Recv(sock, message, RECV_MAX_LEN);
-	
+
 	if (result <= 0) {
 		// TODO: Change this.
 		printf("WARN: result 0 from client_recv\n");
 	}
 
 	return message;
+
+	//unsigned char *dcmessage = malloc(sizeof(int) * strlen(message));
+	//RC4(key, message, dcmessage);
+
+	//printf("%s", dcmessage);
+	//return (char *)dcmessage;
 }
 
 int client_loop()
