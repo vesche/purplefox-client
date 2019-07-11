@@ -9,14 +9,15 @@
 
 #define N 256
 
-void swap(unsigned char *a, unsigned char *b) {
+void swap(unsigned char *a, unsigned char *b)
+{
     int tmp = *a;
     *a = *b;
     *b = tmp;
 }
 
-int KSA(char *key, unsigned char *S) {
-
+int KSA(char *key, unsigned char *S)
+{
     int len = strlen(key);
     int j = 0;
 
@@ -25,15 +26,14 @@ int KSA(char *key, unsigned char *S) {
 
     for (int i = 0; i < N; i++) {
         j = (j + S[i] + key[i % len]) % N;
-
         swap(&S[i], &S[j]);
     }
 
     return 0;
 }
 
-int PRGA(unsigned char *S, char *plaintext, unsigned char *ciphertext) {
-
+int PRGA(unsigned char *S, char *plaintext, unsigned char *ciphertext)
+{
     int i = 0;
     int j = 0;
 
@@ -50,8 +50,8 @@ int PRGA(unsigned char *S, char *plaintext, unsigned char *ciphertext) {
     return 0;
 }
 
-int RC4(char *key, char *plaintext, unsigned char *ciphertext) {
-
+int RC4(char *key, char *plaintext, unsigned char *ciphertext)
+{
     unsigned char S[N];
     KSA(key, S);
 

@@ -24,17 +24,18 @@ def KSA(key):
     """
     key_length = len(key)
     # create the array "S"
-    S = list(range(MOD))  # [0,1,2, ... , 255]
+    S = list(range(MOD))  # [0, 1, 2, ..., 255]
     j = 0
     for i in range(MOD):
         j = (j + S[i] + key[i % key_length]) % MOD
-        S[i], S[j] = S[j], S[i]  # swap values
+        S[i], S[j] = S[j], S[i] # swap values
 
     return S
 
 
 def PRGA(S):
-    """ Psudo Random Generation Algorithm (from wikipedia):
+    """
+    Psudo Random Generation Algorithm (from wikipedia):
         i := 0
         j := 0
         while GeneratingOutput:
@@ -51,13 +52,13 @@ def PRGA(S):
         i = (i + 1) % MOD
         j = (j + S[i]) % MOD
 
-        S[i], S[j] = S[j], S[i]  # swap values
+        S[i], S[j] = S[j], S[i] # swap values
         K = S[(S[i] + S[j]) % MOD]
         yield K
 
 
 def get_keystream(key):
-    """Takes the encryption key to get the keystream using PRGA
+    """ Takes the encryption key to get the keystream using PRGA
     return object is a generator
     """
     S = KSA(key)
@@ -77,7 +78,7 @@ def encrypt_logic(key, text):
 
     res = []
     for c in text:
-        val = ("%02X" % (c ^ next(keystream)))  # XOR and taking hex
+        val = ('%02X' % (c ^ next(keystream)))  # XOR and taking hex
         res.append(val)
     return ''.join(res)
 
@@ -100,16 +101,15 @@ def decrypt(key, ciphertext):
 
 
 def main():
-
-    key = 'not-so-random-key'  # plaintext
-    plaintext = 'Good work! Your implementation is correct'  # plaintext
+    key = 'not-so-random-key' # plaintext
+    plaintext = 'Good work! Your implementation is correct' # plaintext
     # encrypt the plaintext, using key and RC4 algorithm
     ciphertext = encrypt(key, plaintext)
     print('plaintext:', plaintext)
     print('ciphertext:', ciphertext)
-    # ..
+    # ...
     # Let's check the implementation
-    # ..
+    # ...
     ciphertext = '2D7FEE79FFCE80B7DDB7BDA5A7F878CE298615'\
         '476F86F3B890FD4746BE2D8F741395F884B4A35CE979'
     # change ciphertext to string again
@@ -121,11 +121,8 @@ def main():
     else:
         print('Shit! You pooped your pants ! .-.')
 
-    # until next time folks !
-
 
 def test():
-
     # Test case 1
     # key = '4B6579' # 'Key' in hex
     # key = 'Key'

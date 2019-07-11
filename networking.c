@@ -1,5 +1,5 @@
 #include <SDL2/SDL.h>
-#include <stdio.h> // tmp
+#include <stdio.h> // tmp, debug
 #include <string.h>
 
 #include "networking.h"
@@ -7,9 +7,9 @@
 #include "cJSON.h"
 
 #include "rc4.h"
-char *key = "yellowsubmarine"; // tmp until session key
+char *key = "yellowsubmarine"; // tmp, until global session key
 
-#include "main.h" // tmp
+#include "main.h" // tmp, update player locations
 
 const char *server_addr = "localhost";
 const int server_port = 1234;
@@ -23,7 +23,7 @@ void connect_to_server()
 	IPaddress ip;
 	set = SDLNet_AllocSocketSet(1);
 	if (!set) {
-		// TODO: cleanup on these error out (SDL_Quit, etc)
+		// TODO: cleanup these error out (SDL_Quit, etc)
 		//       also standardize error return codes?
 		print_error_msg(ERROR_TYPE_NET, "Couldn't allocate socket");
 		exit(1);
@@ -44,9 +44,6 @@ void connect_to_server()
 		print_error_msg(ERROR_TYPE_NET, "Couldn't add socket");
 		exit(4);
 	}
-
-	// this has been helpful:
-	// https://github.com/raduprv/Eternal-Lands/blob/master/multiplayer.c#L475
 }
 
 void disconnect_from_server()
@@ -58,7 +55,6 @@ void disconnect_from_server()
 
 int client_send(char *message)
 {
-	// char *data = message;
 	unsigned char *ciphertext = malloc(sizeof(int) * strlen(message));
 	RC4(key, message, ciphertext);
 
@@ -69,16 +65,9 @@ int client_send(char *message)
 char *client_recv()
 {
 	int result;
-
-	/*  Note:
-		char message[RECV_MAX_LEN];
-		"function returns address of local variable"...
-		solution from: https://stackoverflow.com/a/12380788
-	*/
 	char *message = malloc(sizeof(char) * RECV_MAX_LEN);
 
 	result = SDLNet_TCP_Recv(sock, message, RECV_MAX_LEN);
-
 	if (result <= 0) {
 		// TODO: Change this.
 		printf("WARN: result 0 from client_recv\n");
@@ -86,18 +75,15 @@ char *client_recv()
 
 	return message;
 
-	//unsigned char *dcmessage = malloc(sizeof(int) * strlen(message));
-	//RC4(key, message, dcmessage);
-
-	//printf("%s", dcmessage);
-	//return (char *)dcmessage;
+	// TODO: Decrypt RC4 incoming message
+	// unsigned char *dcmessage = malloc(sizeof(int) * strlen(message));
+	// RC4(key, message, dcmessage);
+	// printf("%s", dcmessage);
+	// return (char *)dcmessage;
 }
 
 int client_loop()
 {
-	// helpful:
-	// https://github.com/raduprv/Eternal-Lands/blob/master/multiplayer.c#L2332
-
 	for (;;) {
 
 		if (disconnected) {
@@ -112,7 +98,7 @@ int client_loop()
 		if (response)
 			handle_incoming(response);
 	}
-	
+
 	return 1;
 }
 
@@ -138,7 +124,7 @@ void handle_incoming(char *message)
 
 	arguments = cJSON_GetObjectItemCaseSensitive(json, "arguments");
 
-	if (cmd == 1) {
+	if (cmd == 1) { // PLAYER LOCATION REPORT COMMAND
 		printf("Handle player locations here\n");
 	} else if (cmd == 2) { // TEST COMMAND
 		printf("Handle test here\n");

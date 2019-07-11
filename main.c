@@ -11,9 +11,8 @@
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
 
-SDL_Rect player_position;
-
 // tmp until I have something better
+SDL_Rect player_position;
 #include "main.h"
 void update_location(int x, int y)
 {
@@ -29,9 +28,8 @@ int main()
     SDL_Surface *surface;
     SDL_Texture *texture;
 
-    // sprite stuff
+    // sprite
     SDL_Rect player;
-    // SDL_Rect player_position;
 
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         print_error_msg(ERROR_TYPE_SDL2, "Couldn't initialize SDL");
@@ -54,14 +52,14 @@ int main()
     }
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    
+
     if (renderer == NULL) {
         print_error_msg(ERROR_TYPE_SDL2, "Couldn't create SDL renderer");
         SDL_DestroyWindow(window);
         SDL_Quit();
         return 1;
     }
-    
+
     // https://opengameart.org/content/tiny-16-basic
     surface = IMG_Load("sheet.png");
 
@@ -100,17 +98,16 @@ int main()
     player_position.w = player_position.h = 32; // size of player (32, 32)
 
     connect_to_server();
-    
-    // THREADING
-    // https://github.com/raduprv/Eternal-Lands/blob/d277e1f8ff3cc257ac394e7393aa0d1442295b2a/main.c#L179
-    // ------
+
+    // *********
+    // Threading
     SDL_Thread *network_thread;
     network_thread = SDL_CreateThread(client_loop, "client_loop", (void *)NULL);
     if (network_thread == NULL) {
         print_error_msg(ERROR_TYPE_SDL2, "Couldn't create thread");
         return 1;
     }
-    // ------
+    // *********
 
     bool quit = false;
     int frame_time = 0;
@@ -128,9 +125,6 @@ int main()
             case SDL_KEYDOWN:
                 switch (event.key.keysym.sym)
                 {
-                    // key map
-                    // https://www.libsdl.org/release/SDL-1.2.15/docs/html/sdlkey.html
-                    
                     case SDLK_q:
                         quit = true;
                         break;
@@ -184,10 +178,12 @@ int main()
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     
-    // THREADING
+    // *********
+    // Threading
     int thread_return_value;
     SDL_WaitThread(network_thread, &thread_return_value);
     printf("Thread returned: %d\n", thread_return_value);
+    // *********
 
     IMG_Quit();
     SDL_Quit();
